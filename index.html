@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>JavaScript SNN Showcase</title>
+  <meta charset="UTF-8">
+  <meta name="author" content="Michał Antropik" />
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+  <meta
+      name="keywords"
+      content="JavaScript Spiking Neural Network, JS SNN, SNN.js, SNNs in JS, LIF Neuron in JS, JavaScript AI, Neuromorphic Computing Web App, Machine Learning, Artificial Intelligence, CPU ML, Browser ML, Brain Simulation Online "
+  />
+  <meta
+    name="description"
+    content="This web app allows you to generate and visualize a random SNN in your browser" 
+  />
+  <meta
+    property="og:image"
+    content="https://www.neuromorphicism.com/neuromorphicism-logo.png" 
+  />
+  <meta
+    property="og:description"
+    content="This web app allows you to generate and visualize a random SNN in your browser" 
+  />
+  <meta property="og:title" content="JavaScript SNN Showcase" />
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+  <link rel="manifest" href="/favicons/site.webmanifest" />
+
+  <meta
+      id="spikingneuralnetwork-page-meta-twitter:image"
+      name="twitter:image"
+      property="twitter:image"
+      content="https://spikingneural.network/logo.png"
+  />
+  <meta
+      id="spikingneuralnetwork-page-meta-twitter:image:alt"
+      name="twitter:image:alt"
+      property="twitter:image:alt"
+      content="JavaScript SNN Showcase logo"
+  />
+  <meta
+      id="spikingneuralnetwork-page-meta-twitter:title"
+      name="twitter:title"
+      property="twitter:title"
+      content="JavaScript SNN Showcase"
+  />
+  <meta
+      id="spikingneuralnetwork-page-meta-twitter:description"
+      name="twitter:description"
+      property="twitter:description"
+      content="This web app allows you to generate and visualize a random SNN in your browser"
+  />
+  <meta property="og:type" content="website" />
+  <meta property="fb:app_id" content="61561899509232" />
+  <meta
+      id="neuromorphicism-page-meta-twitter:site"
+      name="twitter:site"
+      property="twitter:site"
+      content="neuromorphicism"
+  />
+  <meta
+      id="neuromorphicism-page-meta-twitter:card"
+      name="twitter:card"
+      property="twitter:card"
+      content="summary_large_image"
+  />
+  <meta
+      id="spikingneuralnetwork-page-meta-url"
+      name="url"
+      property="url"
+      content="https://spikingneural.network"
+  />
+  <meta
+      id="spikingneuralnetwork-page-meta-og:url"
+      name="og:url"
+      property="og:url"
+      content="https://spikingneural.network"
+  />
+  <link
+      id="spikingneuralnetwork-page-link-canonical"
+      rel="canonical"
+      href="https://spikingneural.network"
+  />
+
+  <style>
+    @font-face {
+        font-family: rationale;
+        src: url(./fonts/rationale/Rationale-Regular.ttf);
+    }
+
+
+    html {
+        font-family: 'Open Sans', 'Helvetica Neue', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #111;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .content {
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+
+        color: white;
+    }
+
+    .leftPanelWrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        background: black;
+    }
+
+    #neuromorphicism {
+        font-size: 35px;
+        font-weight: lighter;
+    }
+
+    #neuromorphicism, .subtitle, button {
+        font-family: rationale, sans-serif;
+    }
+
+    .subtitle {
+        margin-top: 4px;
+        font-size: 24.5px;
+    }
+
+    .optionsWrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        width: 320px;
+        max-width: 320px;
+    }
+
+    .fieldsWrapper {
+        margin-bottom: 34px;
+    }
+
+    .inputLabel {
+        padding-bottom: 4px;
+        padding-top: 8px;
+    }
+
+    .formField {
+        display: flex;
+        flex-direction: column;
+        justify-content: left;
+        margin: 10px;
+        font-size: 12px;
+        font-style: italic;
+    }
+
+    .functionalButton {
+        font-size: 16px;
+        width: 116px;
+        padding: 12px 8px;
+        margin: 10px 0;
+        border-radius: 8px;
+        background-color: gainsboro;
+    }
+
+    .functionalButton:hover {
+        cursor: pointer;
+        color:#555;
+        background-color: ghostwhite;
+    }
+
+    #controlNetworkButton {
+        padding: 10px 12px;
+        max-height: 70px;
+    }
+
+    #manualInputButton {
+        padding: 10px 12px;
+        max-height: 70px;
+    }
+
+    #manualInputDescription {
+        font-size: 12px;
+        padding: 10px 50px;
+    }
+
+    .footer {
+        display: flex;
+        justify-content: left;
+        font-size: 12px;
+        color: #333;
+    }
+
+    canvas { 
+        width: 100%; 
+        height: 100vh; 
+        background: #111; 
+        display: block; 
+        margin: 0 auto; 
+    }
+
+    /* Mobile RWD */
+    @media only screen and (max-width: 1000px) and (orientation: portrait) {
+        html {
+            overflow: hidden;
+        }
+
+        .content {
+            flex-direction: column;
+        }
+
+        .optionsWrapper {
+            width: auto;
+            max-width: unset;
+            padding-bottom: 60px;
+        }
+
+        #neuromorphicism {
+            font-size: 3.25em;
+        }
+
+        .subtitle {
+            font-size: 2.3em;
+            margin: 0 0 4vw;
+        }
+
+        .formField {
+            font-size: 1.25em;
+        }
+
+        input {
+            font-size: 1.25em;
+        }
+
+        .fieldsWrapper {
+            margin-bottom: 3vh;
+            max-width: 230px;
+        }
+
+        .functionalButton, #controlNetworkButton {
+            width: 22vw;
+            padding: 2vw 2.5vw;
+            margin: 2vw 0;
+            max-height: 94px;
+            font-size: 1.6em;
+        }
+
+        #controlNetworkButton {
+            padding: 1.5vw 3.5vw;
+            margin: 3vw 0;
+            
+        }
+
+        #triggerManualModeButton {
+            display: none;
+        }
+
+        .footer {
+            font-size: 1.3em;
+        }
+
+        .canvasWrapper {
+            background: #111;
+        }
+
+        canvas {
+            width: 100%;
+            height: unset;
+        }
+    }
+  </style>
+</head>
+
+<body>
+<main class="content">
+    <div class="leftPanelWrapper">
+        <div class="optionsWrapper">
+            <h2 id="neuromorphicism">Neuromorphicism</h2>
+            <h2 class="subtitle">JavaScript SNN Showcase</h2>
+            <br>
+
+            <div class="fieldsWrapper">
+                <div class="formField">
+                    <label class="inputLabel" for="numberOfNeurons">Neurons</label>
+                    <input id="numberOfNeurons" type="number" placeholder="Number of nodes" onchange="updateNeurons()" value="32">
+                </div>
+                <div class="formField">
+                    <label class="inputLabel" for="neuronDecayInput">Neuron Decay</label>
+                    <input id="neuronDecayInput" type="number" placeholder="Decay (max 0.99)" onchange="controlNeuronDecay()" min="0.01" max="0.99" step="0.01" value="0.9">
+                </div>
+                <div class="formField">
+                    <label class="inputLabel" for="thersholdInput">LIF Threshold</label>
+                    <input id="thersholdInput" type="number" placeholder="Threshold to spike" onchange="controlThreshold()" min="0.01" step="0.1" value="1.0">
+                </div>
+                <div class="formField">
+                    <label class="inputLabel" for="networkSpeed">Update Speed</label>
+                    <input id="networkSpeed" type="number" placeholder="Inputs per second" onchange="updateSpeed()" min="0.1" step="1.0" value="12">
+                </div>
+            </div>
+
+            <button class="functionalButton" onclick="generateSNN()">Generate SNN</button>
+
+            <button id="controlNetworkButton"class="functionalButton" onclick="controlNetwork()">Pause Network (❘❘)</button>
+
+            <button id="triggerManualModeButton" class="functionalButton manualInputButton" onclick="triggerManualMode()">Manual Input (off)</button>
+            <p id="manualInputDescription" style="display: none">Hover your cursor on a single Neuron to activate it in the Manual Input mode...</p>​
+        </div>
+        <footer class="footer">
+            © Michał Antropik 2025
+        </footer>
+    </div>
+    <div class="canvasWrapper">
+        <canvas id="snnCanvas" width="1600" height="1080"></canvas>
+    </div>
+</main>
+
+<script>
+
+let manualInputMode = false;
+const neuronCircleRadius = 14;
+// The lower the wider
+const leftPanelWidthForOffset = 320;
+
+class Neuron {
+  constructor(x, y, threshold = Number(document.getElementById("thersholdInput").value)|| 1.0, decay = (!!document.getElementById("neuronDecayInput").value ? Math.min(Number(document.getElementById("neuronDecayInput").value), 0.99) : 0.95)) {
+    this.x = x;
+    this.y = y;
+
+    this.potential = 0;
+    this.threshold = threshold;
+    this.decay = decay;
+    this.spike = false;
+  }
+
+  receiveInput(input) {
+    this.potential += input;
+  }
+
+  // Here are bugs with non-existent connections then to spikes propagation
+  update() {
+    this.potential = this.decay * this.potential < 0.01 ? 0 : this.decay * this.potential;
+
+    if (this.potential >= this.threshold) {
+      this.spike = true;
+      this.potential = 0;
+    } else {
+      this.spike = false;
+    }
+  }
+
+  draw(ctx) {
+    ctx.beginPath();
+    // Draw a neuron as a circle
+    ctx.arc(this.x, this.y, neuronCircleRadius, 0, 2 * Math.PI);
+
+    let transparencyLevel;
+    if (this.potential > 0.9) {
+        transparencyLevel = "E5";
+    } else if (this.potential < 0.1) {
+        transparencyLevel = "0A";
+    } else {
+        transparencyLevel = (255 * this.potential).toString(16).slice(-2);
+    }
+
+    // Color the neuron with rising potential
+    ctx.fillStyle = this.spike ? '#eeeeee' : `#444444${transparencyLevel}`;
+    ctx.fill();
+    ctx.strokeStyle = '#444';
+    ctx.stroke();
+  }
+}
+
+class SNN {
+  constructor(ctx, size) {
+    this.ctx = ctx;
+    this.neurons = [];
+    this.connections = [];
+    this.neuronsThatHaveConnections = [true];
+
+    const now = new Date();
+    const offsetNetworkToLeft = size > 25 ? -290 : -260;
+    const mainWidth = window.innerWidth;
+    const mainHeight = window.innerHeight;
+
+    const mobileHeightOffsetRatio = 2.95;
+    const mobileCanvasHeightOffset = -(mainHeight/mobileHeightOffsetRatio);
+    const mobileCanvasLeftOffset = -115;
+    const mobileMaxWidth = 1000;
+    const isMobile = mainWidth < mobileMaxWidth;
+
+    const tabletMaxWidth = 1200;
+    const isTablet = mainWidth < tabletMaxWidth && mainWidth > mobileMaxWidth;
+    const tabletLeftOffset = -250;
+    const tabletHeightOffsetRatio = 9;
+    const tabletCanvasHeightOffset = -(mainHeight/tabletHeightOffsetRatio);
+
+    const minWidth2K = 2500;
+    const width2KLeftOffset = -340;
+    const is2K = mainWidth > minWidth2K;
+
+    const minWidth4K = 3000;
+    const minHeight4K = 2100;
+    const width4KLeftOffset = -500;
+    const canvasHeight4KOffset = 50;
+    const is4K = mainWidth > minWidth4K && mainHeight > minHeight4K;
+
+
+    const finalOffsetOfNetworkOnCanvasToLeft = (is4K ? width4KLeftOffset : is2K ? width2KLeftOffset : isTablet ? tabletLeftOffset : isMobile ? mobileCanvasLeftOffset : offsetNetworkToLeft);
+    const finalOffsetOfNetworkOnCanvasToTop = (is4K ? canvasHeight4KOffset : isTablet ? tabletCanvasHeightOffset : isMobile ? mobileCanvasHeightOffset : 0);
+
+
+    let radius = 704 / size;
+    
+    if (isMobile) {
+        radius = 530 / size
+    }
+    if (isTablet) {
+        radius = 400 / size
+    }
+    if (mainHeight < 900 && mainWidth < 1400) {
+        radius = 495 / size;
+    }
+    // I added this responsive feature on the 11th of September 2025
+    if (is2K) {
+        radius = 1000 / size;
+    }
+    if (is4K) {
+        radius = 1650 / size;
+    }
+
+    // Position of whole network (each neuron) on canvas
+    for (let i = 0; i < size; i++) {
+      const angle = (2 * Math.PI / size) * i;
+      const x =  finalOffsetOfNetworkOnCanvasToLeft + mainWidth/2 + i*radius * Math.cos(angle);
+      const y = finalOffsetOfNetworkOnCanvasToTop + mainHeight/1.53 + i*radius * Math.sin(angle);
+
+      this.neurons.push(new Neuron(x, y));
+    }
+
+    const numberOfNeuronsFromInput = Number(document.getElementById("numberOfNeurons").value)
+    const largeAmountOfNeurons = 50;
+    const hugeAmountOfNeurons = 150;
+    const chance = !!numberOfNeuronsFromInput && numberOfNeuronsFromInput > hugeAmountOfNeurons ? 0.02 : 0.1;
+
+    for (let i = 0; i < size; i++) {
+      this.connections[i] = [];
+      const max = !!numberOfNeuronsFromInput ? numberOfNeuronsFromInput > hugeAmountOfNeurons ? 10 : numberOfNeuronsFromInput < 100 ? 5 : 4 : 3;
+      const min = 1;
+      const randomRange = Math.floor(Math.random() * max) + min;
+      const lowerSizeOfNeuronToNeuronConnectionsScale = !!numberOfNeuronsFromInput && numberOfNeuronsFromInput > largeAmountOfNeurons ? randomRange : 1;
+
+      for (let j = 0; j < size / lowerSizeOfNeuronToNeuronConnectionsScale; j++) {
+
+            // Remove self connections
+            if (i != j) {
+                // Randomize weights 30% chance for each connection 
+                let connectionWeight = (Math.random() < chance) ? Math.random() : 0;
+                this.connections[i][j] = connectionWeight;
+
+                if (connectionWeight && !this.neuronsThatHaveConnections.includes(i)) {
+                    this.neuronsThatHaveConnections.push(i);
+                }
+            } else {
+                this.connections[i][j] = 0;
+            }
+      }
+    }
+  }
+
+
+  step(inputs) {
+    const mousePointerRadiusPx = 24;
+    let canvasCursor = document.body.parentNode.style;
+
+    // Spike event
+    this.neurons.forEach((singleNeuron, i) => {
+        if (this.neurons[i].spike) {
+            this.connections[i].forEach((connectionWeight, j) => {
+                // Propagate from neuron to connections j but check if there is such connection first
+                if (!!this.connections[i][j]) {
+                    this.neurons[j].receiveInput(Number(this.connections[i][j]));
+                }
+            });
+        }
+
+    });
+
+    if (!manualInputMode) {
+        inputs.forEach((inputValue, i) => {
+            // First check if that neuron even has connections to any other neuron, why bother firing it...
+            if (this.neuronsThatHaveConnections.includes(i)) {
+                this.neurons[i].receiveInput(inputValue);
+            }
+        });
+    } else {
+
+        // Check if your mouse is on the single neurons coords: it is better with faster loop than forEach and break
+        for (let i = 0; i < this.neurons.length; i++) {
+            let neuron = this.neurons[i];
+
+            if ((inputs[0].mousePositionX <= (neuron.x - (neuronCircleRadius) + mousePointerRadiusPx) && inputs[0].mousePositionX >= (neuron.x - (neuronCircleRadius) - mousePointerRadiusPx))
+            && (inputs[0].mousePositionY <= (neuron.y + mousePointerRadiusPx) && inputs[0].mousePositionY >= (neuron.y - mousePointerRadiusPx))) {
+                neuron.receiveInput(0.2);
+
+                if (!canvasCursor.cursor|| canvasCursor.cursor == 'default') {
+                    canvasCursor.setProperty("cursor", "cell");
+                }
+
+                break;
+            } else {
+                if (!canvasCursor.cursor|| canvasCursor.cursor == 'cell') {
+                    canvasCursor.setProperty("cursor", "default");
+
+                }
+            }
+        }
+    }
+ 
+
+    this.neurons.forEach(n => n.update());
+  }
+
+  draw() {
+    this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    // Here the neurons are drawn on canvas with their current rising potentials and spikes
+    for (let i = 0; i < this.neurons.length; i++) {
+
+      this.neurons[i].draw(this.ctx);
+
+      for (let j = 0; j < this.neurons.length; j++) {
+
+        // Check if there is a connection between neuron i and neuron j then draw it
+        if (this.connections[i][j] > 0) {
+            const from = this.neurons[i];
+            const to = this.neurons[j];
+
+            // Draw the line
+            this.ctx.beginPath();
+            this.ctx.moveTo(from.x, from.y);
+            this.ctx.lineTo(to.x, to.y);
+            this.ctx.strokeStyle = 'rgba(255,255,255, 0.2)';
+            this.ctx.stroke();
+
+            // Draw the arrowhead
+            const dx = to.x - from.x;
+            const dy = to.y - from.y;
+            // Length of the arrowhead
+            const headLength = 10; 
+            const angle = Math.atan2(dy, dx);
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(to.x, to.y);
+            this.ctx.lineTo(to.x - headLength * Math.cos(angle - Math.PI / 6),
+                            to.y - headLength * Math.sin(angle - Math.PI / 6));
+            this.ctx.lineTo(to.x - headLength * Math.cos(angle + Math.PI / 6),
+                            to.y - headLength * Math.sin(angle + Math.PI / 6));
+            this.ctx.lineTo(to.x, to.y);
+            this.ctx.fillStyle = 'rgba(255,255,255, 0.2)';
+            this.ctx.fill();
+        }
+      }
+    }
+
+
+  }
+}
+
+// Init the display of SNN 
+const canvas = document.getElementById('snnCanvas');
+const ctx = canvas.getContext('2d');
+
+let numberOfNeurons = 32;
+let snn = new SNN(ctx, numberOfNeurons);
+
+function generateSNN() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    numberOfNeurons = Number(document.getElementById("numberOfNeurons").value);
+
+    snn.neurons = null;
+    snn.connections = null;
+    snn = null;
+    snn = new SNN(ctx, !!numberOfNeurons ? numberOfNeurons : 32);
+
+
+    if (isAnimationOnHold) {
+        document.getElementById("controlNetworkButton").innerHTML = "Pause Network (❘❘)";
+
+        isAnimationOnHold = false;
+        loop();
+    }
+}
+
+// Prepare the canvas animation
+let FPS = 12;
+let isAnimationOnHold = false;
+
+function updateSpeed() {
+    let speedInputValue = document.getElementById("networkSpeed").value;
+    FPS = Number(!!speedInputValue && speedInputValue > 0 ? Number(speedInputValue) : 1);
+
+
+    if (!!speedInputValue && speedInputValue <= 0) {
+        document.getElementById("networkSpeed").value = 1;
+    }
+}
+
+// This might be expanded to live update number of neurons in currently generated SNN
+function updateNeurons() {
+    let neuronsNumber = document.getElementById("numberOfNeurons").value;
+
+    if (!!neuronsNumber && neuronsNumber <= 0) {
+        document.getElementById("numberOfNeurons").value = 1;
+    }
+}
+
+function controlNeuronDecay() {
+    let neuronDecayValue = document.getElementById("neuronDecayInput").value;
+
+    if (!!neuronDecayValue && neuronDecayValue > 0.99) {
+        document.getElementById("neuronDecayInput").value = 0.99;
+    } else if (!!neuronDecayValue && neuronDecayValue < 0) {
+        document.getElementById("neuronDecayInput").value = 0;
+    }
+}
+
+function controlThreshold() {
+    let thresholdValue = document.getElementById("thersholdInput").value;
+
+    if (!!thresholdValue && thresholdValue < 0) {
+        document.getElementById("thersholdInput").value = 0;
+    }
+}
+
+function controlNetwork() {
+    if (!isAnimationOnHold) {
+        isAnimationOnHold = true;
+        document.getElementById("controlNetworkButton").innerHTML = "Run Network (▸)";
+    } else {
+        document.getElementById("controlNetworkButton").innerHTML = "Pause Network (❘❘)";
+
+        isAnimationOnHold = false;
+        loop();
+    }
+}
+
+// Manual mode does not work on smartphones as touch should be used here instead, maybe this can be expanded in the future
+let currentMousePositionX = null;
+let currentMousePositionY = null;
+
+function triggerManualMode() {
+    manualInputMode = !manualInputMode;
+
+    if (manualInputMode) {
+        document.getElementById("triggerManualModeButton").innerHTML = "Manual Input (on)";
+        document.getElementById("manualInputDescription").style.display = "block";
+
+
+        document.addEventListener('mousemove', (event) => {
+            if (!!event.pageX) {
+                currentMousePositionX = event.pageX
+            }
+
+            if (!!event.pageY) {
+                currentMousePositionY = event.pageY
+            }
+        });
+    } else {
+        document.getElementById("triggerManualModeButton").innerHTML = "Manual Input (off)";
+        document.getElementById("manualInputDescription").style.display = "none";
+
+        document.removeEventListener('mousemove', (event) => {});
+    }
+}
+
+// Lock the screen orientation on mobile
+screen.lockOrientationUniversal = screen.lockOrientation || screen.mozLockOrientation|| screen.msLockOrientation;
+
+// Main SNN engine loop with canvas animation
+function loop(event) {
+    if (!isAnimationOnHold) {
+
+        // This will only work in production, won't work in dev tools so set RWD canvas in CSS
+        if (window.innerWidth > 1000) {
+            if (canvas.width != window.innerWidth - leftPanelWidthForOffset) {
+                canvas.width = window.innerWidth - leftPanelWidthForOffset;
+            }
+
+            if (canvas.height != window.innerHeight) {
+                canvas.height = window.innerHeight;
+            }
+        } else {
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight;
+        }
+     
+
+        if (manualInputMode) {
+            let inputs = Array(numberOfNeurons).fill(0).map(() => {
+                return ({
+                    mousePositionX: currentMousePositionX - leftPanelWidthForOffset + (window.innerWidth < 1300 ? 40 : 0),
+                    mousePositionY: currentMousePositionY,
+                    value: Math.random() > 0.9 ? 1 : 0
+                })
+            });
+
+            snn.draw();
+            snn.step(inputs);
+        } else {
+            let inputs = Array(numberOfNeurons).fill(0).map(() => Math.random() > 0.9 ? 1 : 0);
+
+            snn.draw();
+            snn.step(inputs);
+        }
+
+        // Adjust canvas animation and its speed
+        setTimeout(() => {
+            requestAnimationFrame(loop);
+        }, 1000 / (!!FPS ? FPS : 12));
+    }
+}
+
+loop();
+
+</script>
+
+</body>
+</html>
+
